@@ -1,0 +1,29 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Serve E-Ayuda",
+            "type": "process",
+            "command": "powershell.exe",
+            "args": [
+                "-NoProfile",
+                "-ExecutionPolicy",
+                "Bypass",
+                "-File",
+                "${workspaceFolder}\\scripts\\serve.ps1"
+            ],
+            "isBackground": true,
+            "problemMatcher": {
+                "owner": "e-ayuda-server",
+                "pattern": {
+                    "regexp": "^$"
+                },
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": "E-Ayuda dev server listening at http://localhost:8080/",
+                    "endsPattern": "E-Ayuda dev server stopped"
+                }
+            }
+        }
+    ]
+}

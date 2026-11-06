@@ -1,164 +1,84 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>E-Ayuda | Community Assistance Portal</title>
-    <link rel="stylesheet" href="Public.css" />
-    <script type="module" src="public.js"></script>
-  </head>
-  <body>
-    <header class="topbar">
-      <div class="brand" aria-label="E-Ayuda home">
-        <div class="brand-mark">♡</div>
-        <div class="brand-copy">
-          <div class="brand-name">E-Ayuda</div>
-          <small>Community Assistance Portal</small>
-        </div>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>E-Ayuda Sign In</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script type="module" src="js/auth.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+</head>
+<body>
+
+    <div class="Signup">
+    <div class="left-section">
+      <h1 class="main-title">E-Ayuda<br>Community Assistance Portal</h1>
+
+      <div class="personal-card">
+        <span class="subtitle">YOUR COMMUNITY, HERE TO HELP</span>
+        <h2 class="heading">Assistance made SIMPE, FAIR, and ACCESSIBLE</h2>
+        <p class="description">
+          Find government assistance programs you qualify for and apply online without waiting in long lines.
+        </p>
       </div>
+    </div>
 
-      <nav class="main-nav" aria-label="Main navigation">
-        <a href="#" class="active">
-          <span class="nav-icon">⌂</span>
-          <span>Home</span>
-        </a>
-        <a href="#programs">Programs</a>
-        <a href="#steps">How it works</a>
-      </nav>
+    <div class="right-section">
+      <div class="login-card">
 
-      <a href="Login.html" class="portal-link">My account <span>→</span></a>
-    </header>
 
-    <main class="hero">
-      <section class="hero-copy">
-        <p class="eyebrow">YOUR COMMUNITY, HERE TO HELP</p>
-        <h1>Assistance made simple, fair, and accessible.</h1>
-        <p class="subtitle">
-          Find government assistance programs you qualify for and apply online—
-          without waiting in long lines.
+
+        <h2 class="welcome-title" id="auth-title">Welcome!</h2>
+        <p class="welcome-subtitle" id="auth-description">Sign in to apply for assistance or track your applications.</p>
+
+        <form class="login-form" id="login-form">
+
+          <div class="html-form">
+            <label for="login-email">Email address</label>
+            <div class="login-input">
+              <i class="ri-user-line input-icon"></i>
+              <input type="email" id="login-email" name="email" autocomplete="username" placeholder="Enter your email address" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="login-password">Password</label>
+            <div class="login-input">
+              <i class="ri-lock-line input-icon"></i>
+              <input type="password" id="login-password" name="password" autocomplete="current-password" placeholder="Enter your password" required>
+              <i class="ri-eye-off-line toggle-password"></i>
+            </div>
+          </div>
+
+          <div class="options">
+            <a href="pages/forgotpwd.html" class="forgot-link">Forgot password?</a>
+          </div>
+
+          <button type="submit" class="submit-btn">Log In</button>
+          <p class="auth-feedback" id="auth-feedback" role="status" aria-live="polite"></p>
+        </form>
+
+        <form class="password-reset-form" id="password-reset-form" hidden>
+          <div class="form-group">
+            <label for="new-password">New password</label>
+            <div class="login-input">
+              <i class="ri-lock-line input-icon"></i>
+              <input type="password" id="new-password" name="password" autocomplete="new-password" minlength="8" required>
+            </div>
+          </div>
+          <button type="submit" class="submit-btn">Save new password</button>
+          <p class="auth-feedback" id="reset-feedback" role="status" aria-live="polite"></p>
+        </form>
+
+        <p class="signup-text">
+          New to E-Ayuda?
+          <a href="pages/SignUp.html" class="signup-link">Sign up</a>
         </p>
 
-        <a class="hero-cta" href="#programs">
-          View available programs <span>→</span>
-        </a>
-      </section>
-
-      <section class="hero-visual" aria-label="Support card illustration">
-        <div class="orb"></div>
-        <div class="support-card">
-          <div class="card-icon">♡</div>
-          <h2>Help is within reach.</h2>
-          <p>Simple forms. Clear steps. No long queues.</p>
-          <div class="progress">
-            <span></span>
-          </div>
-        </div>
-      </section>
-    </main>
-
-    <section class="programs-section" id="programs">
-      <div class="programs-header">
-        <div>
-          <p class="programs-label">OPEN FOR APPLICATIONS</p>
-          <h2>Available Ayuda Programs</h2>
-          <p class="helper-text">Choose a program below to see its requirements and apply.</p>
-        </div>
-        <div class="status-pill" id="program-count">Loading programs…</div>
       </div>
+    </div>
 
-      <div class="filter-tabs" aria-label="Program categories">
-        <button class="tab active" type="button" data-category="all" aria-pressed="true">All Programs</button>
-        <button class="tab" type="button" data-category="food" aria-pressed="false">Food</button>
-        <button class="tab" type="button" data-category="education" aria-pressed="false">Education</button>
-        <button class="tab" type="button" data-category="financial" aria-pressed="false">Financial</button>
-      </div>
+  </div>
 
-      <div class="program-cards" id="program-cards" aria-live="polite">
-        <p class="program-message">Loading available programs…</p>
-      </div>
-      <p class="program-message error-message" id="program-message" role="status" aria-live="polite"></p>
-    </section>
-
-    <section class="application-status">
-      <div class="status-panel">
-        <div class="status-copy">
-          <div class="status-icon">▣</div>
-          <div class="status-text">
-            <p class="panel-tag">APPLICATION STATUS</p>
-            <h3>Track your applications</h3>
-            <p>
-              Sign in to securely view the status of your applications.
-            </p>
-          </div>
-        </div>
-        <a class="check-btn status-link" href="MyApplications.html">View my applications</a>
-      </div>
-    </section>
-
-    <section class="steps-section" id="steps">
-      <div class="steps-wrap">
-        <p class="steps-label">A FASTER WAY TO GET HELP</p>
-        <h2>Apply in three simple steps</h2>
-
-        <div class="steps-grid">
-          <div class="step-item">
-            <span class="step-number">01</span>
-            <div class="step-copy">
-              <h3>Choose a program</h3>
-              <p>Review the details and requirements.</p>
-            </div>
-          </div>
-
-          <div class="step-item">
-            <span class="step-number">02</span>
-            <div class="step-copy">
-              <h3>Complete your form</h3>
-              <p>Enter your information securely online.</p>
-            </div>
-          </div>
-
-          <div class="step-item">
-            <span class="step-number">03</span>
-            <div class="step-copy">
-              <h3>Wait for confirmation</h3>
-              <p>The local team will review your application.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <footer class="site-footer">
-      <div class="footer-inner">
-        <div class="footer-brand">
-          <div class="footer-mark">♡</div>
-          <div>
-            <div class="footer-name">E-Ayuda</div>
-            <small>Community Assistance Portal</small>
-          </div>
-        </div>
-
-        <p class="footer-note">Need help applying? Visit your Barangay Hall or call (02) 8888-1234.</p>
-      </div>
-    </footer>
-
-    <dialog class="apply-dialog" id="apply-dialog">
-      <form class="apply-form" id="apply-form">
-        <button class="apply-dialog-close" type="button" id="close-apply" aria-label="Close application form">×</button>
-        <p class="panel-tag">PROGRAM APPLICATION</p>
-        <h2 id="apply-program-name">Apply for assistance</h2>
-        <p class="apply-account" id="apply-account"></p>
-        <label for="applicant-name">Full name</label>
-        <input id="applicant-name" name="full_name" type="text" autocomplete="name" minlength="2" maxlength="120" required />
-        <label for="applicant-phone">Phone number</label>
-        <input id="applicant-phone" name="phone" type="tel" autocomplete="tel" maxlength="30" required />
-        <label class="consent-label">
-          <input id="application-consent" type="checkbox" required />
-          <span>I confirm that the information I submit is accurate.</span>
-        </label>
-        <p class="form-message" id="apply-message" role="status" aria-live="polite"></p>
-        <button class="check-btn" type="submit" id="submit-application">Submit application</button>
-      </form>
-    </dialog>
-  </body>
+</body>
 </html>

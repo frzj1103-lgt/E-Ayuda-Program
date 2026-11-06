@@ -4,6 +4,9 @@ import { SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL } from "./supabase-config.js";
 const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 const list = document.querySelector("#my-applications-list");
 const message = document.querySelector("#account-message");
+if (new URLSearchParams(window.location.search).get("notice") === "admin-check-failed") {
+  message.textContent = "Signed in, but administrator access could not be verified. You can still view your applications.";
+}
 
 function element(tag, className, text) {
   const node = document.createElement(tag);
@@ -47,7 +50,7 @@ async function loadMyApplications() {
   if (!user) {
     document.querySelector("#account-intro").textContent = "Sign in to securely view your application status.";
     const link = element("a", "account-login-link", "Sign in");
-    link.href = "Login.html";
+    link.href = "../index.html";
     list.append(link);
     return;
   }
@@ -61,7 +64,7 @@ async function loadMyApplications() {
     .order("submitted_at", { ascending: false });
 
   if (applicationError) {
-    message.textContent = `Could not load applications: ${applicationError.message}. Make sure you have run supabase-application-setup.sql.`;
+    message.textContent = `Could not load applications: ${applicationError.message}. Run the database setup for your new Supabase project.`;
     return;
   }
 

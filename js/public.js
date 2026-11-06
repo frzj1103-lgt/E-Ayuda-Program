@@ -123,7 +123,9 @@ async function openApplication(program) {
     return;
   }
   if (!data.session) {
-    window.location.href = `Login.html?program=${encodeURIComponent(program.id)}`;
+    const loginUrl = new URL("../index.html", window.location.href);
+    loginUrl.searchParams.set("program", program.id);
+    window.location.href = loginUrl.href;
     return;
   }
 
@@ -194,14 +196,30 @@ applyForm.addEventListener("submit", async (event) => {
 }
 );
 
-const params = new URLSearchParams(window.location.search);
-const programToApply = params.get("apply");
-if (programToApply) {
-  window.history.replaceState({}, "", window.location.pathname);
-  loadPrograms().then(() => {
+async function initializeHomePage() {
+  const { data, error } = await supabase.auth.getSession();
+  if (error) {
+    programCount.textContent = "Sign-in could not be verified";
+    setMessage(`Could not verify sign-in: ${error.message}`, true);
+    return;
+  }
+  if (!data.session) {
+    const loginUrl = new URL("../index.html", window.location.href);
+    const programId = new URLSearchParams(window.location.search).get("apply");
+    if (programId) loginUrl.searchParams.set("program", programId);
+    window.location.replace(loginUrl.href);
+    return;
+  }
+
+  const programToApply = new URLSearchParams(window.location.search).get("apply");
+  if (programToApply) {
+    window.history.replaceState({}, "", window.location.pathname);
+    await loadPrograms();
     const program = programs.find((item) => item.id === programToApply);
-    if (program) openApplication(program);
-  });
-} else {
-  loadPrograms();
+    if (program) await openApplication(program);
+    return;
+  }
+  await loadPrograms();
 }
+
+initializeHomePage();

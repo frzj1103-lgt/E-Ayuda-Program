@@ -475,7 +475,7 @@ programForm.addEventListener("submit", async (event) => {
 });
 
 if (!configIsPresent) {
-  showAuth("Set your Supabase project URL and publishable key in supabase-config.js, then reload this page.");
+  showAuth("Set your Supabase project URL and publishable key in js/supabase-config.js, then reload this page.");
   loginSubmit.disabled = true;
 } else {
   const supabaseClient = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
