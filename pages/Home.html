@@ -6,6 +6,7 @@
     <title>E-Ayuda | Community Assistance Portal</title>
     <link rel="stylesheet" href="../css/Public.css" />
     <script type="module" src="../js/public.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.css" rel="stylesheet">
   </head>
   <body>
     <header class="topbar">
@@ -19,14 +20,13 @@
 
       <nav class="main-nav" aria-label="Main navigation">
         <a href="#" class="active">
-          <span class="nav-icon">⌂</span>
           <span>Home</span>
         </a>
         <a href="#programs">Programs</a>
         <a href="#steps">How it works</a>
       </nav>
 
-      <a href="MyApplications.html" class="portal-link">My account <span>→</span></a>
+      <a href="SignUp.html" class="portal-link">Sign Out <span>→</span></a>
     </header>
 
     <main class="hero">
@@ -160,5 +160,42 @@
         <button class="check-btn" type="submit" id="submit-application">Submit application</button>
       </form>
     </dialog>
+    <script>
+      // Navbar underline: follows clicks and scrolling (independent of public.js)
+      (function () {
+        var links = Array.prototype.slice.call(document.querySelectorAll(".main-nav a"));
+        var targets = links.map(function (a) {
+          var h = a.getAttribute("href");
+          return h && h.charAt(0) === "#" && h.length > 1 ? document.querySelector(h) : null;
+        });
+
+        function setActive(index) {
+          links.forEach(function (a, i) {
+            a.classList.toggle("active", i === index);
+            if (i === index) a.setAttribute("aria-current", "page");
+            else a.removeAttribute("aria-current");
+          });
+        }
+
+        function update() {
+          var y = window.scrollY + 140;
+          var current = 0;
+          targets.forEach(function (t, i) {
+            if (t && t.offsetTop <= y) current = i;
+          });
+          if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4) {
+            current = links.length - 1;
+          }
+          setActive(current);
+        }
+
+        links.forEach(function (a, i) {
+          a.addEventListener("click", function () { setActive(i); });
+        });
+        window.addEventListener("scroll", update, { passive: true });
+        window.addEventListener("resize", update);
+        update();
+      })();
+    </script>
   </body>
 </html>

@@ -9,7 +9,6 @@ const applyDialog = document.querySelector("#apply-dialog");
 const applyForm = document.querySelector("#apply-form");
 const applyMessage = document.querySelector("#apply-message");
 const submitButton = document.querySelector("#submit-application");
-
 let programs = [];
 let selectedCategory = "all";
 let selectedProgram;

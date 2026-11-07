@@ -5,29 +5,50 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>My Applications | E-Ayuda</title>
     <link rel="stylesheet" href="../css/Public.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.css" rel="stylesheet">
     <script type="module" src="../js/my-applications.js"></script>
   </head>
-  <body>
+  <body class="account-page">
     <header class="topbar">
-      <a class="brand" href="../index.html" aria-label="E-Ayuda public page">
-        <div class="brand-mark">♡</div>
+      <a class="brand" href="Home.html" aria-label="E-Ayuda home">
+        <div class="icon-badge">
+          <i class="ri-heart-line"></i>
+        </div>
         <div class="brand-copy">
           <div class="brand-name">E-Ayuda</div>
           <small>Community Assistance Portal</small>
         </div>
       </a>
-      <nav class="main-nav" aria-label="Account navigation">
-        <a href="../index.html#programs">Programs</a>
-        <button id="account-sign-out" class="account-sign-out" type="button" hidden>Sign out</button>
+
+      <nav class="main-nav" aria-label="Main navigation">
+        <a href="Home.html">
+          </div>
+          <span>Home</span>
+        </a>
+        <a href="Home.html#programs">Programs</a>
+        <a href="Home.html#steps">How it works</a>
       </nav>
+
+      <div class="account-actions">
+        <a href="SignUp.html" class="portal-link" aria-current="page">Sign Out <span>→</span></a>
+        <button id="account-sign-out" class="account-sign-out" type="button" hidden>Sign out</button>
+      </div>
     </header>
+
     <main class="my-applications">
       <p class="programs-label">YOUR ACCOUNT</p>
       <h1>My applications</h1>
       <p class="helper-text" id="account-intro">Checking your sign-in…</p>
       <div id="my-applications-list" class="my-applications-list" aria-live="polite"></div>
       <p id="account-message" class="account-message" role="status" aria-live="polite"></p>
-      <a class="account-back-link" href="../index.html#programs">Browse available programs</a>
+      <a class="account-back-link" href="Home.html#programs">Browse available programs</a>
     </main>
+
+    <footer class="site-footer">
+    
+
+        <p class="footer-note">Need help applying? Visit your Barangay Hall or call (02) 8888-1234.</p>
+      </div>
+    </footer>
   </body>
 </html>
