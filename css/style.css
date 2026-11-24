@@ -56,6 +56,7 @@ body {
   font-weight: 900;
   line-height: 1.25;
   margin-bottom: 2.5rem;
+  letter-spacing: -0.02em;
 }
 
 .personal-card {
@@ -761,4 +762,174 @@ body {
   .forgot-right {
     padding: 2.5rem 1.5rem;
   }
+}
+
+/* Public authentication pages */
+body {
+  background: #cfe4f7;
+  padding: 32px;
+  color: #102a3d;
+}
+
+.Signup {
+  max-width: 1180px;
+  gap: 64px;
+}
+
+.main-title {
+  font-family: Impact, "Arial Black", sans-serif;
+  font-size: clamp(3.5rem, 6vw, 6.5rem);
+  line-height: 0.96;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  margin-bottom: 30px;
+  color: #ffffff;
+}
+
+.subtitle {
+  color: #153d5b;
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  margin-bottom: 16px;
+}
+
+.heading {
+  max-width: 520px;
+  color: #153d5b;
+  font-family: Impact, "Arial Black", sans-serif;
+  font-size: clamp(2.1rem, 3.4vw, 3.6rem);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.description {
+  max-width: 480px;
+  color: #31536b;
+}
+
+.right-section {
+  width: 410px;
+}
+
+.card-text,
+.login-card,
+.forgot-card {
+  border: 1px solid rgba(16, 42, 61, 0.12);
+  border-radius: 0;
+  box-shadow: 14px 14px 0 rgba(36, 93, 134, 0.12);
+  background: #ffffff;
+}
+
+.card-header {
+  border-bottom: 1px solid #dce7ee;
+  padding-bottom: 18px;
+  margin-bottom: 20px;
+}
+
+.signup-icon-badge,
+.html-icon-badge,
+.icon-badge {
+  border-radius: 50%;
+  background: #edf4f8;
+  color: #245d86;
+}
+
+.title,
+.welcome-title,
+.forgot-card .title {
+  color: #102a3d;
+}
+
+.Signup-input input,
+.login-input input,
+.input-wrapper input {
+  min-height: 46px;
+  border: 1px solid #cbdbe7;
+  border-radius: 3px;
+  background: #fafdff;
+}
+
+.Signup-input input:focus,
+.login-input input:focus,
+.input-wrapper input:focus {
+  border-color: #245d86;
+  box-shadow: 0 0 0 2px rgba(36, 93, 134, 0.08);
+}
+
+.submit-btn,
+.forgot-card .submit-btn {
+  min-height: 48px;
+  border-radius: 3px;
+  background: #102a3d;
+  box-shadow: none;
+}
+
+.submit-btn:hover,
+.forgot-card .submit-btn:hover {
+  background: #245d86;
+}
+
+.forgot-card {
+  max-width: 920px;
+  background: #ffffff;
+}
+
+.forgot-left {
+  background: #e9f2f8;
+}
+
+.forgot-right {
+  background: #ffffff;
+}
+
+.illustration-bg {
+  background: #d4e6f3;
+  border-radius: 50%;
+}
+
+.lock-body,
+.lock-body::before,
+.sync-badge,
+.dots-badge {
+  border-color: #245d86;
+}
+
+.lock-body,
+.sync-badge {
+  background: #245d86;
+}
+
+.divider {
+  margin: 20px 0;
+}
+
+@media (max-width: 900px) {
+  body {
+    align-items: flex-start;
+  }
+
+  .Signup {
+    gap: 28px;
+  }
+
+  .main-title {
+    font-size: clamp(3.2rem, 14vw, 5.2rem);
+  }
+
+  .right-section {
+    width: 100%;
+  }
+}
+
+body {
+  background: linear-gradient(
+    180deg,
+    #0099ff 0%,
+    #0099ff 22%,
+    #67b9e8 43%,
+    #dfeeff 68%,
+    #fdfdfe 100%
+  );
 }

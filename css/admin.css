@@ -804,14 +804,30 @@ a {
   clip-path: inset(50%);
 }
 
+body {
+  background: linear-gradient(
+    180deg,
+    #0099ff 0%,
+    #0099ff 22%,
+    #67b9e8 43%,
+    #dfeeff 68%,
+    #fdfdfe 100%
+  );
+}
+
 .auth-screen {
   display: grid;
   min-height: 100vh;
   place-items: center;
   padding: 24px;
-  background:
-    radial-gradient(circle at 15% 15%, rgba(32, 113, 170, 0.13), transparent 35%),
-    var(--page);
+  background: linear-gradient(
+    180deg,
+    #0099ff 0%,
+    #0099ff 22%,
+    #67b9e8 43%,
+    #dfeeff 68%,
+    #fdfdfe 100%
+  );
 }
 
 .auth-card {
