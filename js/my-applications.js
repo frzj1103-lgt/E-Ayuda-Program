@@ -94,13 +94,16 @@ async function loadMyApplications() {
   renderApplications(applications, programs);
 }
 
-document.querySelector("#account-sign-out").addEventListener("click", async () => {
+const signOutButton = document.querySelector("#account-sign-out");
+signOutButton.addEventListener("click", async () => {
+  signOutButton.disabled = true;
   const { error } = await supabase.auth.signOut();
   if (error) {
+    signOutButton.disabled = false;
     message.textContent = `Could not sign out: ${error.message}`;
     return;
   }
-  window.location.reload();
+  window.location.replace("../index.html");
 });
 
 loadMyApplications();

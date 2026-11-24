@@ -139,6 +139,18 @@ async function openApplication(program) {
 
 document.querySelector("#close-apply").addEventListener("click", () => applyDialog.close());
 
+const signOutButton = document.querySelector("#home-sign-out");
+signOutButton.addEventListener("click", async () => {
+  signOutButton.disabled = true;
+  const { error } = await supabase.auth.signOut();
+  signOutButton.disabled = false;
+  if (error) {
+    setMessage(`Could not sign out: ${error.message}`, true);
+    return;
+  }
+  window.location.replace(new URL("../index.html", import.meta.url).href);
+});
+
 for (const tab of document.querySelectorAll(".filter-tabs .tab")) {
   tab.addEventListener("click", () => {
     selectedCategory = tab.dataset.category;

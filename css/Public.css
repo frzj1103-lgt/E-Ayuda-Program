@@ -2655,6 +2655,7 @@ body.account-page {
 }
 
 .home-page .portal-link {
+  margin: 0;
   min-height: 38px;
   display: inline-flex;
   align-items: center;
@@ -2668,6 +2669,8 @@ body.account-page {
   letter-spacing: 0.06em;
   padding: 10px 14px;
   box-shadow: none;
+  cursor: pointer;
+  font-family: inherit;
 }
 
 .home-page .hero {
@@ -3200,6 +3203,7 @@ body.account-page .main-nav a::after {
 
 body.account-page .portal-link,
 body.account-page .account-sign-out {
+  margin: 0;
   border: 0;
   border-radius: 4px;
   background: #fff;
@@ -3207,6 +3211,8 @@ body.account-page .account-sign-out {
   font-size: 0.72rem;
   font-weight: 800;
   text-transform: uppercase;
+  cursor: pointer;
+  font-family: inherit;
 }
 
 body.account-page .account-actions .portal-link[aria-current="page"] {
