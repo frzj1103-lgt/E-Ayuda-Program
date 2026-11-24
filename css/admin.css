@@ -23,6 +23,16 @@ html {
   scroll-behavior: smooth;
 }
 
+body,
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+*::-webkit-scrollbar {
+  display: none;
+}
+
 body {
   margin: 0;
   background: var(--page);
@@ -1127,9 +1137,10 @@ body {
 
   .sidebar-nav {
     display: flex;
+    flex-wrap: wrap;
     gap: 5px;
     margin-top: 12px;
-    overflow-x: auto;
+    overflow: visible;
   }
 
   .nav-link {
@@ -1368,13 +1379,7 @@ body {
 }
 
 .nav-link.selected::after {
-  position: absolute;
-  right: 8px;
-  bottom: -7px;
-  left: 8px;
-  height: 2px;
-  background: #fff;
-  content: "";
+  display: none;
 }
 
 .nav-count {
@@ -1428,11 +1433,11 @@ body {
 }
 
 .account-copy strong {
-  color: #102a3d;
+  color: #000;
 }
 
 .account-copy small {
-  color: #526d85;
+  color: rgba(255, 255, 255, 0.84);
 }
 
 .sign-out-button,
@@ -1482,7 +1487,7 @@ body {
     order: 3;
     width: 100%;
     margin: 0;
-    overflow-x: auto;
+    overflow: visible;
   }
 
   .main-content {
