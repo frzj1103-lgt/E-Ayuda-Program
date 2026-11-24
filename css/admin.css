@@ -230,7 +230,6 @@ a {
   gap: 10px;
 }
 
-.notification-button,
 .icon-button {
   position: relative;
   display: grid;
@@ -242,16 +241,6 @@ a {
   background: white;
   color: #365a78;
   cursor: pointer;
-}
-
-.notification-dot {
-  position: absolute;
-  top: 7px;
-  right: 7px;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #df6969;
 }
 
 .avatar {
