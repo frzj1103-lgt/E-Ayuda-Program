@@ -1,10 +1,8 @@
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
 import { SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL } from "./supabase-config.js";
 
-const authScreen = document.querySelector("#auth-screen");
-const loginForm = document.querySelector("#login-form");
-const loginSubmit = document.querySelector("#login-submit");
-const authMessage = document.querySelector("#auth-message");
+const adminLoading = document.querySelector("#admin-loading");
+const adminLoadingMessage = document.querySelector("#admin-loading-message");
 const adminLayout = document.querySelector("#admin-layout");
 const dashboardMessage = document.querySelector("#dashboard-message");
 const searchInput = document.querySelector('input[type="search"]');
@@ -32,35 +30,24 @@ let totalApplicationCount = 0;
 let pendingApplicationCount = 0;
 let confirmedApplicationCount = 0;
 let isLoading = false;
+let isRedirectingToLogin = false;
 
-function showAuth(message = "") {
-  authScreen.hidden = false;
+function showAccessMessage(message, isError = false) {
+  adminLoading.hidden = false;
   adminLayout.hidden = true;
-  currentUser = undefined;
-  applications = [];
-  programs = [];
-  weekApplications = [];
-  applicationCountsByProgram = new Map();
-  totalApplicationCount = 0;
-  pendingApplicationCount = 0;
-  confirmedApplicationCount = 0;
-  applicationGroups.replaceChildren();
-  document.querySelector("#active-program-list").replaceChildren();
-  setText("#total-applications", "—");
-  setText("#pending-applications", "—");
-  setText("#confirmed-applications", "—");
-  setText("#active-program-count", "—");
-  authMessage.textContent = message;
+  adminLoadingMessage.textContent = message;
+  adminLoadingMessage.classList.toggle("error", isError);
+}
+
+function redirectToLogin() {
+  if (isRedirectingToLogin) return;
+  isRedirectingToLogin = true;
+  window.location.replace(new URL("../index.html", import.meta.url).href);
 }
 
 function showDashboard() {
-  authScreen.hidden = true;
+  adminLoading.hidden = true;
   adminLayout.hidden = false;
-}
-
-function setAuthMessage(message, isError = true) {
-  authMessage.textContent = message;
-  authMessage.classList.toggle("error", isError);
 }
 
 function setDashboardMessage(message, isError = false) {
@@ -405,7 +392,7 @@ async function loadDashboard() {
 async function verifyAdmin(user) {
   if (!user) {
     currentUser = undefined;
-    showAuth();
+    redirectToLogin();
     return;
   }
 
@@ -417,12 +404,16 @@ async function verifyAdmin(user) {
     .maybeSingle();
 
   if (error) {
-    showAuth(`Could not verify admin access: ${error.message}`);
+    showAccessMessage(`Could not verify admin access: ${error.message}`, true);
     return;
   }
   if (!data) {
-    await supabase.auth.signOut();
-    showAuth("This account does not have active administrator access.");
+    const { error: signOutError } = await supabase.auth.signOut();
+    if (signOutError) {
+      showAccessMessage(`This account does not have administrator access, and sign-out failed: ${signOutError.message}`, true);
+      return;
+    }
+    redirectToLogin();
     return;
   }
 
@@ -475,31 +466,10 @@ programForm.addEventListener("submit", async (event) => {
 });
 
 if (!configIsPresent) {
-  showAuth("Set your Supabase project URL and publishable key in js/supabase-config.js, then reload this page.");
-  loginSubmit.disabled = true;
+  showAccessMessage("Set your Supabase project URL and publishable key in js/supabase-config.js, then reload this page.", true);
 } else {
   const supabaseClient = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
   supabase = supabaseClient;
-
-  loginForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    loginSubmit.disabled = true;
-    setAuthMessage("Signing in…", false);
-    const formData = new FormData(loginForm);
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email: String(formData.get("email")).trim(),
-      password: String(formData.get("password")),
-    });
-
-    loginSubmit.disabled = false;
-    if (error) {
-      setAuthMessage(`Sign-in failed: ${error.message}`);
-      return;
-    }
-
-    setAuthMessage("");
-    await verifyAdmin(data.user);
-  });
 
   document.querySelector("#sign-out").addEventListener("click", async () => {
     const { error } = await supabase.auth.signOut();
@@ -509,7 +479,7 @@ if (!configIsPresent) {
     }
     applications = [];
     programs = [];
-    showAuth();
+    redirectToLogin();
   });
 
   searchInput.addEventListener("input", renderApplications);
@@ -520,7 +490,7 @@ if (!configIsPresent) {
   });
   supabase.auth.getSession().then(({ data, error }) => {
     if (error) {
-      showAuth(`Could not restore your session: ${error.message}`);
+      showAccessMessage(`Could not restore your session: ${error.message}`, true);
       return;
     }
     verifyAdmin(data.session?.user);
@@ -529,7 +499,7 @@ if (!configIsPresent) {
   supabase.auth.onAuthStateChange((event, session) => {
     if (event === "SIGNED_OUT" || !session) {
       currentUser = undefined;
-      showAuth();
+      redirectToLogin();
     }
   });
 }

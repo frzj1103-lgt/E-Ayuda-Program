@@ -3058,11 +3058,11 @@ body.account-page {
 }
 
 html:has(body.account-page) {
-  background: linear-gradient(180deg, #0099ff 0%, #67b9e8 43%, #dfeeff 68%, #fdfdfe 100%);
+  background: linear-gradient(180deg, #0099ff 0%, #0099ff 35%, #67b9e8 60%, #dfeeff 85%, #fdfdfe 100%);
 }
 
 body.account-page {
-  background: linear-gradient(180deg, #0099ff 0%, #67b9e8 43%, #dfeeff 68%, #fdfdfe 100%) !important;
+  background: linear-gradient(180deg, #0099ff 0%, #0099ff 35%, #67b9e8 60%, #dfeeff 85%, #fdfdfe 100%) !important;
   color: var(--ink) !important;
 }
 
@@ -3118,11 +3118,11 @@ body.account-page .site-footer small {
 }
 
 html:has(.my-applications) {
-  background: linear-gradient(180deg, #0099ff 0%, #67b9e8 43%, #dfeeff 68%, #fdfdfe 100%);
+  background: linear-gradient(180deg, #0099ff 0%, #0099ff 35%, #67b9e8 60%, #dfeeff 85%, #fdfdfe 100%);
 }
 
 body:has(.my-applications) {
-  background: linear-gradient(180deg, #0099ff 0%, #67b9e8 43%, #dfeeff 68%, #fdfdfe 100%) !important;
+  background: linear-gradient(180deg, #0099ff 0%, #0099ff 35%, #67b9e8 60%, #dfeeff 85%, #fdfdfe 100%) !important;
   color: var(--ink) !important;
   min-height: 100vh;
   display: flex;
@@ -3150,4 +3150,190 @@ body:has(.my-applications) .my-applications h3 {
 
 body:has(.my-applications) .account-back-link {
   color: var(--blue-700);
+}
+
+body.account-page .topbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  min-height: 84px;
+  padding: 14px 4vw;
+  background: #0876cf;
+  border: 0;
+  box-shadow: none;
+}
+
+body.account-page .brand {
+  color: #fff;
+}
+
+body.account-page .brand-name {
+  color: #fff;
+  font-family: Impact, "Arial Black", sans-serif;
+  font-size: 1.55rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+body.account-page .main-nav {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  gap: 26px;
+  margin: 0;
+}
+
+body.account-page .main-nav a {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+body.account-page .main-nav a::after {
+  bottom: -10px;
+  height: 2px;
+  border-radius: 0;
+  background: #fff;
+}
+
+body.account-page .portal-link,
+body.account-page .account-sign-out {
+  border: 0;
+  border-radius: 4px;
+  background: #fff;
+  color: #102a3d;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+body.account-page .account-actions .portal-link[aria-current="page"] {
+  border: 0;
+  background: #fff;
+  color: #102a3d;
+}
+
+body.account-page .my-applications {
+  display: grid;
+  width: min(100% - 96px, 1200px);
+  min-height: calc(100vh - 152px);
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  align-items: center;
+  gap: clamp(36px, 7vw, 96px);
+  padding: 52px 0;
+}
+
+body.account-page .account-hero-copy .programs-label {
+  color: #fff;
+}
+
+body.account-page .my-applications h1 {
+  color: #fff;
+  font-family: Impact, "Arial Black", sans-serif;
+  font-size: clamp(3.7rem, 6vw, 6rem);
+  line-height: 0.96;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+}
+
+body.account-page .account-hero-copy .helper-text {
+  max-width: 480px;
+  color: #123553;
+  font-size: 1rem;
+  line-height: 1.55;
+}
+
+body.account-page .account-results {
+  min-width: 0;
+  padding: clamp(24px, 3vw, 38px);
+  border: 1px solid rgba(16, 42, 61, 0.12);
+  background: #fff;
+  box-shadow: 16px 16px 0 rgba(16, 62, 99, 0.14);
+}
+
+body.account-page .account-results .panel-tag {
+  margin-bottom: 18px;
+  color: #245d86;
+}
+
+body.account-page .my-application-card {
+  border: 1px solid #d5e1ea;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+@media (max-width: 900px) {
+  body.account-page .topbar {
+    min-height: 76px;
+    padding: 12px 24px;
+  }
+
+  body.account-page .my-applications {
+    width: calc(100% - 56px);
+    min-height: auto;
+    grid-template-columns: 1fr;
+    gap: 28px;
+    padding: 42px 0 54px;
+  }
+}
+
+@media (max-width: 560px) {
+  body.account-page .topbar {
+    padding: 12px 16px;
+  }
+
+  body.account-page .main-nav {
+    position: static;
+    transform: none;
+    gap: 14px;
+  }
+
+  body.account-page .main-nav a {
+    font-size: 0.62rem;
+  }
+
+  body.account-page .my-applications {
+    width: calc(100% - 32px);
+    padding: 32px 0 42px;
+  }
+
+  body.account-page .my-applications h1 {
+    font-size: 3.2rem;
+  }
+}
+
+@media (max-width: 980px) {
+  body.account-page .account-actions {
+    width: auto;
+  }
+
+  body.account-page .topbar {
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  body.account-page .main-nav {
+    width: auto;
+  }
+}
+
+@media (max-width: 560px) {
+  body.account-page .topbar {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+  }
+
+  body.account-page .account-actions {
+    width: auto;
+    justify-self: end;
+  }
+
+  body.account-page .main-nav {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
 }

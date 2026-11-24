@@ -12,29 +12,16 @@
     <script type="module" src="../js/admin.js"></script>
   </head>
   <body>
-    <section class="auth-screen" id="auth-screen" aria-labelledby="auth-title">
-      <form class="auth-card" id="login-form">
-        <div class="auth-brand-mark" aria-hidden="true">♡</div>
-        <p class="auth-eyebrow">E-AYUDA ADMIN</p>
-        <h1 id="auth-title">Sign in to your dashboard</h1>
-        <p class="auth-description">Use your authorized administrator account to continue.</p>
-        <label for="login-email">Email address</label>
-        <input id="login-email" name="email" type="email" autocomplete="username" required />
-        <label for="login-password">Password</label>
-        <input id="login-password" name="password" type="password" autocomplete="current-password" required />
-        <button class="auth-submit" id="login-submit" type="submit">Sign in</button>
-        <p class="auth-message" id="auth-message" role="status" aria-live="polite"></p>
-        <a class="auth-public-link" href="../index.html">← Return to public page</a>
-      </form>
-    </section>
+    <main class="admin-loading" id="admin-loading" role="status" aria-live="polite">
+      <p id="admin-loading-message">Checking administrator access…</p>
+      <a href="../index.html">Continue to sign in</a>
+    </main>
 
     <div class="admin-layout" id="admin-layout" hidden>
       <aside class="sidebar">
         <a class="brand" href="admin.html" aria-label="E-Ayuda admin dashboard">
-          <span class="brand-mark" aria-hidden="true">♡</span>
           <span class="brand-copy">
             <strong>E-Ayuda</strong>
-            <small>Community Assistance Portal</small>
           </span>
         </a>
 

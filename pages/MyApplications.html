@@ -11,18 +11,13 @@
   <body class="account-page">
     <header class="topbar">
       <a class="brand" href="Home.html" aria-label="E-Ayuda home">
-        <div class="icon-badge">
-          <i class="ri-heart-line"></i>
-        </div>
         <div class="brand-copy">
           <div class="brand-name">E-Ayuda</div>
-          <small>Community Assistance Portal</small>
         </div>
       </a>
 
       <nav class="main-nav" aria-label="Main navigation">
         <a href="Home.html">
-          </div>
           <span>Home</span>
         </a>
         <a href="Home.html#programs">Programs</a>
@@ -36,17 +31,21 @@
     </header>
 
     <main class="my-applications">
-      <p class="programs-label">YOUR ACCOUNT</p>
-      <h1>My applications</h1>
-      <p class="helper-text" id="account-intro">Checking your sign-in…</p>
-      <div id="my-applications-list" class="my-applications-list" aria-live="polite"></div>
-      <p id="account-message" class="account-message" role="status" aria-live="polite"></p>
-      <a class="account-back-link" href="Home.html#programs">Browse available programs</a>
+      <section class="account-hero-copy" aria-labelledby="account-title">
+        <p class="programs-label">YOUR ACCOUNT</p>
+        <h1 id="account-title">My applications</h1>
+        <p class="helper-text" id="account-intro">Checking your sign-in…</p>
+        <a class="account-back-link" href="Home.html#programs">Browse available programs</a>
+      </section>
+      <section class="account-results" aria-label="Application history">
+        <p class="panel-tag">APPLICATION HISTORY</p>
+        <div id="my-applications-list" class="my-applications-list" aria-live="polite"></div>
+        <p id="account-message" class="account-message" role="status" aria-live="polite"></p>
+      </section>
     </main>
 
     <footer class="site-footer">
-    
-
+      <div class="footer-inner">
         <p class="footer-note">Need help applying? Visit your Barangay Hall or call (02) 8888-1234.</p>
       </div>
     </footer>
