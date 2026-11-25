@@ -237,6 +237,50 @@ function capitalize(value) {
   return value ? value[0].toUpperCase() + value.slice(1) : "Unknown";
 }
 
+// ===== NEW: show the uploaded ID and signature (private bucket -> signed URLs) =====
+function showApplicationFiles(application) {
+  const files = [
+    ["Valid government ID", application.id_path],
+    ["Signature", application.signature_path],
+  ];
+  const section = makeElement("div", "detail-files");
+
+  for (const [label, path] of files) {
+    const box = makeElement("div", "detail-file");
+    box.append(makeElement("p", "detail-file-label", label));
+    section.append(box);
+
+    if (!path) {
+      box.append(makeElement("p", "detail-file-empty", "Not provided"));
+      continue;
+    }
+
+    const status = makeElement("p", "detail-file-empty", "Loading…");
+    box.append(status);
+    supabase.storage
+      .from("application-files")
+      .createSignedUrl(path, 600)
+      .then(({ data, error }) => {
+        if (error || !data?.signedUrl) {
+          status.textContent = `Could not load file: ${error?.message ?? "unknown error"}`;
+          return;
+        }
+        const link = document.createElement("a");
+        link.href = data.signedUrl;
+        link.target = "_blank";
+        link.rel = "noopener";
+        const image = document.createElement("img");
+        image.className = "detail-file-image";
+        image.src = data.signedUrl;
+        image.alt = label;
+        link.append(image);
+        status.replaceWith(link);
+      });
+  }
+  applicationDetails.append(section);
+}
+// ===== END NEW =====
+
 function showApplicationDetails(application) {
   const program = programs.find((item) => item.id === application.program_id);
   applicationDetails.replaceChildren();
@@ -248,6 +292,13 @@ function showApplicationDetails(application) {
   const details = [
     ["Program", program?.name ?? "Unknown program"],
     ["Email", application.applicant_email],
+    // NEW: fields from the application form
+    ["First name", application.first_name || "Not provided"],
+    ["Middle name", application.middle_name || "Not provided"],
+    ["Last name", application.last_name || "Not provided"],
+    ["Age", application.age ?? "Not provided"],
+    ["Sex", application.sex || "Not provided"],
+    ["Complete address", application.address || "Not provided"],
     ["Phone", application.applicant_phone || "Not provided"],
     ["Status", capitalize(application.status)],
     ["Submitted", formatDate(application.submitted_at)],
@@ -258,6 +309,7 @@ function showApplicationDetails(application) {
     list.append(makeElement("dt", "", label), makeElement("dd", "", value));
   }
   applicationDetails.append(list);
+  showApplicationFiles(application); // NEW: government ID + signature
 
   if (application.status === "pending") {
     const notesLabel = makeElement("label", "review-notes-label", "Private reviewer notes");
@@ -325,7 +377,7 @@ async function loadDashboard() {
         .order("created_at", { ascending: false }),
       supabase
         .from("applications")
-        .select("id,program_id,applicant_name,applicant_email,applicant_phone,status,submitted_at")
+        .select("id,program_id,applicant_name,applicant_email,applicant_phone,status,submitted_at,first_name,middle_name,last_name,age,sex,address,id_path,signature_path")
         .order("submitted_at", { ascending: false })
         .range(0, 499),
       supabase.from("application_reviews").select("application_id,reviewer_notes"),
@@ -354,6 +406,11 @@ async function loadDashboard() {
     applications = applicationResult.data.map((application) => ({
       ...application,
       reviewer_notes: reviewNotes.get(application.id) ?? null,
+      // NEW: build the full name from the new fields if applicant_name is empty
+      applicant_name: application.applicant_name
+        || [application.first_name, application.middle_name, application.last_name].filter(Boolean).join(" ")
+        || "Unnamed applicant",
+      applicant_email: application.applicant_email || "",
     }));
     totalApplicationCount = totalResult.count ?? 0;
     pendingApplicationCount = pendingResult.count ?? 0;

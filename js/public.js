@@ -344,7 +344,7 @@ applyForm.addEventListener("submit", async (event) => {
     const { error } = await supabase.rpc("submit_application", {
       p_program_id: selectedProgram.id,
       p_first_name: firstName,
-      p_middle_name: middleName || null,
+      p_middle_name: middleName,
       p_last_name: lastName,
       p_age: age,
       p_sex: sex,
