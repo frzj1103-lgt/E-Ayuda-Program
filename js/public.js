@@ -13,6 +13,65 @@ let programs = [];
 let selectedCategory = "all";
 let selectedProgram;
 
+// ===== NEW: signature pad + file upload helpers =====
+const signatureCanvas = document.querySelector("#signature-canvas");
+const signatureContext = signatureCanvas.getContext("2d");
+let isDrawing = false;
+let hasDrawn = false;
+
+function clearSignature() {
+  signatureContext.fillStyle = "#fff";
+  signatureContext.fillRect(0, 0, signatureCanvas.width, signatureCanvas.height);
+  signatureContext.strokeStyle = "#000";
+  signatureContext.lineWidth = 2.5;
+  signatureContext.lineCap = "round";
+  hasDrawn = false;
+}
+clearSignature();
+
+function signaturePoint(event) {
+  const rect = signatureCanvas.getBoundingClientRect();
+  return {
+    x: ((event.clientX - rect.left) * signatureCanvas.width) / rect.width,
+    y: ((event.clientY - rect.top) * signatureCanvas.height) / rect.height,
+  };
+}
+
+signatureCanvas.addEventListener("pointerdown", (event) => {
+  isDrawing = true;
+  const { x, y } = signaturePoint(event);
+  signatureContext.beginPath();
+  signatureContext.moveTo(x, y);
+});
+signatureCanvas.addEventListener("pointermove", (event) => {
+  if (!isDrawing) return;
+  const { x, y } = signaturePoint(event);
+  signatureContext.lineTo(x, y);
+  signatureContext.stroke();
+  hasDrawn = true;
+});
+signatureCanvas.addEventListener("pointerup", () => { isDrawing = false; });
+signatureCanvas.addEventListener("pointerleave", () => { isDrawing = false; });
+document.querySelector("#clear-signature").addEventListener("click", clearSignature);
+
+function updateSignatureMode() {
+  const mode = document.querySelector('input[name="signature-mode"]:checked').value;
+  document.querySelector("#signature-draw-box").hidden = mode !== "draw";
+  document.querySelector("#signature-upload-box").hidden = mode !== "upload";
+}
+for (const radio of document.querySelectorAll('input[name="signature-mode"]')) {
+  radio.addEventListener("change", updateSignatureMode);
+}
+
+async function uploadFile(file, userId, label) {
+  const extension = file.name ? file.name.split(".").pop() : "png";
+  const path = `${userId}/${crypto.randomUUID()}-${label}.${extension}`;
+  const { error } = await supabase.storage.from("application-files").upload(path, file);
+  if (error) throw error;
+  return path;
+}
+// ===== END NEW =====
+
 function createElement(tag, className, text) {
   const element = document.createElement(tag);
   if (className) element.className = className;
@@ -131,8 +190,14 @@ async function openApplication(program) {
   const profileName = data.session.user.user_metadata?.full_name ?? "";
   document.querySelector("#apply-program-name").textContent = program.name;
   document.querySelector("#apply-account").textContent = `Applying as ${data.session.user.email}`;
-  document.querySelector("#applicant-name").value = profileName;
-  document.querySelector("#applicant-phone").value = "";
+  // OLD (replaced by the new fields below):
+  // document.querySelector("#applicant-name").value = profileName;
+  // document.querySelector("#applicant-phone").value = "";
+  // NEW: reset the form, then fill in the email
+  applyForm.reset();
+  clearSignature();
+  updateSignatureMode();
+  document.querySelector("#applicant-email").value = data.session.user.email ?? "";
   document.querySelector("#apply-message").textContent = "Your email is taken from your signed-in account.";
   applyDialog.showModal();
 }
@@ -163,6 +228,8 @@ for (const tab of document.querySelectorAll(".filter-tabs .tab")) {
   });
 }
 
+// ===== OLD submit handler (kept for reference, replaced by the new one below) =====
+/*
 applyForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   if (!selectedProgram) return;
@@ -206,6 +273,100 @@ applyForm.addEventListener("submit", async (event) => {
   setMessage("Application submitted. Sign in to your account to track its status.");
 }
 );
+*/
+
+// ===== NEW: submit handler with the full application form =====
+applyForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  if (!selectedProgram) return;
+
+  const sessionResult = await supabase.auth.getSession();
+  if (sessionResult.error) {
+    applyMessage.textContent = `Could not verify sign-in: ${sessionResult.error.message}`;
+    return;
+  }
+  const session = sessionResult.data.session;
+  if (!session) {
+    applyMessage.textContent = "Your session expired. Sign in again to submit your application.";
+    return;
+  }
+
+  const firstName = document.querySelector("#applicant-first-name").value.trim();
+  const middleName = document.querySelector("#applicant-middle-name").value.trim();
+  const lastName = document.querySelector("#applicant-last-name").value.trim();
+  const age = Number(document.querySelector("#applicant-age").value);
+  const sex = document.querySelector("#applicant-sex").value;
+  const address = document.querySelector("#applicant-address").value.trim();
+  const idFile = document.querySelector("#applicant-id-file").files[0];
+  const signatureMode = document.querySelector('input[name="signature-mode"]:checked').value;
+  const signatureFile = document.querySelector("#signature-file").files[0];
+
+  if (firstName.length < 2 || lastName.length < 2) {
+    applyMessage.textContent = "Enter your first and last name.";
+    return;
+  }
+  if (!Number.isInteger(age) || age < 1 || age > 120) {
+    applyMessage.textContent = "Enter a valid age.";
+    return;
+  }
+  if (!sex) {
+    applyMessage.textContent = "Select your sex.";
+    return;
+  }
+  if (address.length < 10) {
+    applyMessage.textContent = "Enter your complete address.";
+    return;
+  }
+  if (!idFile) {
+    applyMessage.textContent = "Upload a photo of your valid government ID.";
+    return;
+  }
+  if (signatureMode === "draw" && !hasDrawn) {
+    applyMessage.textContent = "Please draw your signature.";
+    return;
+  }
+  if (signatureMode === "upload" && !signatureFile) {
+    applyMessage.textContent = "Upload a photo of your signature.";
+    return;
+  }
+
+  submitButton.disabled = true;
+  applyMessage.textContent = "Submitting your application…";
+
+  try {
+    const userId = session.user.id;
+    const idPath = await uploadFile(idFile, userId, "gov-id");
+    const signature = signatureMode === "draw"
+      ? await new Promise((resolve) => signatureCanvas.toBlob(resolve, "image/png"))
+      : signatureFile;
+    const signaturePath = await uploadFile(signature, userId, "signature");
+
+    const { error } = await supabase.rpc("submit_application", {
+      p_program_id: selectedProgram.id,
+      p_first_name: firstName,
+      p_middle_name: middleName || null,
+      p_last_name: lastName,
+      p_age: age,
+      p_sex: sex,
+      p_address: address,
+      p_id_path: idPath,
+      p_signature_path: signaturePath,
+    });
+    if (error) throw error;
+  } catch (error) {
+    submitButton.disabled = false;
+    applyMessage.textContent = `Could not submit application: ${error.message}`;
+    return;
+  }
+
+  submitButton.disabled = false;
+  applyDialog.close();
+  applyForm.reset();
+  clearSignature();
+  updateSignatureMode();
+  setMessage("Application submitted. Sign in to your account to track its status.");
+});
+// ===== END NEW =====
 
 async function initializeHomePage() {
   const { data, error } = await supabase.auth.getSession();

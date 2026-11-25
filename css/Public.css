@@ -193,6 +193,8 @@ header {
   margin: 0 0 18px;
 }
 
+
+
 .hero-copy h1 {
   max-width: 760px;
   margin: 0;
@@ -3342,4 +3344,111 @@ body.account-page .my-application-card {
     grid-column: 1 / -1;
     grid-row: 2;
   }
+}
+
+/* ===== NEW: expanded application form ===== */
+.apply-dialog {
+  width: min(92vw, 560px);
+  max-height: 90vh;
+}
+
+.apply-form input[type="text"],
+.apply-form input[type="email"],
+.apply-form input[type="number"],
+.apply-form select,
+.apply-form textarea {
+  width: 100%;
+  min-height: 46px;
+  margin-bottom: 14px;
+  padding: 0 12px;
+  border: 1px solid rgba(17, 90, 142, 0.25);
+  border-radius: 3px;
+  background: #fff;
+  color: var(--ink);
+  font: inherit;
+}
+
+.apply-form textarea {
+  padding: 10px 12px;
+  resize: vertical;
+}
+
+.apply-form input[type="file"] {
+  width: 100%;
+  margin-bottom: 14px;
+  padding: 10px 12px;
+  border: 1px solid rgba(17, 90, 142, 0.25);
+  border-radius: 3px;
+  background: #fff;
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.85rem;
+}
+
+.apply-form input[readonly] {
+  background: #edf4f8;
+  color: rgba(8, 58, 95, 0.75);
+}
+
+.apply-form input:focus,
+.apply-form select:focus,
+.apply-form textarea:focus {
+  outline: 2px solid var(--home-blue, #0876cf);
+  outline-offset: 1px;
+}
+
+/* Signature section */
+.signature-fieldset {
+  margin: 4px 0 0;
+  padding: 14px;
+  border: 1px solid #cbdce8;
+  border-radius: 3px;
+}
+
+.signature-fieldset legend {
+  padding: 0 6px;
+  color: #294a66;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.signature-fieldset .consent-label {
+  margin-top: 6px;
+}
+
+#signature-canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 12px 0 8px;
+  border: 1px solid rgba(17, 90, 142, 0.25);
+  border-radius: 3px;
+  background: #fff;
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.apply-form .signature-clear {
+  margin: 0;
+  padding: 8px 14px;
+  border: 1px solid #b9cbd8;
+  border-radius: 3px;
+  background: #fff;
+  box-shadow: none;
+  color: var(--ink);
+  font-size: 0.8rem;
+}
+
+#signature-upload-box {
+  display: flex;
+  flex-direction: column;
+  margin-top: 12px;
+}
+
+#signature-upload-box input[type="file"] {
+  margin-bottom: 0;
+}
+
+.apply-form [hidden] {
+  display: none !important;
 }
