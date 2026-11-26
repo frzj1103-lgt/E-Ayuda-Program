@@ -1564,3 +1564,47 @@ body {
   border-radius: 8px;
   background: #fff;
 }
+
+/* ===== NEW: confirmed applicants list + delete program ===== */
+.confirmed-panel {
+  margin-top: 20px;
+}
+
+.confirmed-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.confirmed-names {
+  max-height: 360px;
+  margin: 0;
+  padding: 4px 0 4px 28px;
+  overflow-y: auto;
+  color: #173b59;
+  font-size: 13px;
+  line-height: 2;
+}
+
+.delete-program-button {
+  margin-top: 10px;
+  padding: 6px 12px;
+  border: 1px solid #e3b4b4;
+  border-radius: 8px;
+  background: #fff;
+  color: #b42318;
+  cursor: pointer;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.delete-program-button:hover {
+  background: #fdecec;
+}
+
+.delete-program-button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}

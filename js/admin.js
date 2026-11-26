@@ -23,6 +23,7 @@ const configIsPresent = requiredConfig.every(
 let supabase;
 let currentUser;
 let applications = [];
+let confirmedApplicants = []; // NEW
 let programs = [];
 let weekApplications = [];
 let applicationCountsByProgram = new Map();
@@ -148,6 +149,11 @@ function renderPrograms() {
     bar.style.setProperty("--progress", `${progress}%`);
     track.append(bar);
     item.append(label, track);
+    // NEW: delete button
+    const deleteButton = makeElement("button", "delete-program-button", "Delete program");
+    deleteButton.type = "button";
+    deleteButton.addEventListener("click", () => deleteProgram(program, deleteButton));
+    item.append(deleteButton);
     list.append(item);
   }
 }
@@ -302,7 +308,6 @@ function showApplicationDetails(application) {
     ["Phone", application.applicant_phone || "Not provided"],
     ["Status", capitalize(application.status)],
     ["Submitted", formatDate(application.submitted_at)],
-    ["Reviewer notes", application.reviewer_notes || "No notes"],
   ];
   const list = makeElement("dl", "details-list");
   for (const [label, value] of details) {
@@ -312,23 +317,16 @@ function showApplicationDetails(application) {
   showApplicationFiles(application); // NEW: government ID + signature
 
   if (application.status === "pending") {
-    const notesLabel = makeElement("label", "review-notes-label", "Private reviewer notes");
-    notesLabel.htmlFor = "review-notes";
-    const notesInput = makeElement("textarea", "review-notes-input");
-    notesInput.id = "review-notes";
-    notesInput.maxLength = 2000;
-    notesInput.value = application.reviewer_notes ?? "";
-    applicationDetails.append(notesLabel, notesInput);
     const actions = makeElement("div", "dialog-actions");
     const confirmButton = makeElement("button", "confirm-button", "Confirm application");
     confirmButton.type = "button";
     confirmButton.addEventListener("click", async () => {
-      if (await updateApplicationStatus(application, "confirmed", confirmButton, notesInput.value)) applicationDialog.close();
+      if (await updateApplicationStatus(application, "confirmed", confirmButton)) applicationDialog.close();
     });
     const rejectButton = makeElement("button", "reject-button", "Reject");
     rejectButton.type = "button";
     rejectButton.addEventListener("click", async () => {
-      if (await updateApplicationStatus(application, "rejected", rejectButton, notesInput.value)) applicationDialog.close();
+      if (await updateApplicationStatus(application, "rejected", rejectButton)) applicationDialog.close();
     });
     actions.append(confirmButton, rejectButton);
     applicationDetails.append(actions);
@@ -370,7 +368,7 @@ async function loadDashboard() {
     const weekStart = new Date(now);
     weekStart.setDate(now.getDate() - ((now.getDay() + 6) % 7));
     weekStart.setHours(0, 0, 0, 0);
-    const [programResult, applicationResult, reviewResult, totalResult, pendingResult, confirmedResult, weekResult] = await Promise.all([
+    const [programResult, applicationResult, totalResult, pendingResult, confirmedResult, weekResult] = await Promise.all([
       supabase
         .from("programs")
         .select("id,name,category,description,eligibility,requirements,application_deadline,slot_limit,is_active,created_at")
@@ -380,7 +378,6 @@ async function loadDashboard() {
         .select("id,program_id,applicant_name,applicant_email,applicant_phone,status,submitted_at,first_name,middle_name,last_name,age,sex,address,id_path,signature_path")
         .order("submitted_at", { ascending: false })
         .range(0, 499),
-      supabase.from("application_reviews").select("application_id,reviewer_notes"),
       supabase.from("applications").select("id", { count: "exact", head: true }),
       supabase.from("applications").select("id", { count: "exact", head: true }).eq("status", "pending"),
       supabase.from("applications").select("id", { count: "exact", head: true }).eq("status", "confirmed"),
@@ -393,19 +390,14 @@ async function loadDashboard() {
 
     if (programResult.error) throw new Error(`Could not load programs: ${programResult.error.message}`);
     if (applicationResult.error) throw new Error(`Could not load applications: ${applicationResult.error.message}`);
-    if (reviewResult.error) throw new Error(`Could not load private review notes: ${reviewResult.error.message}`);
     if (totalResult.error) throw new Error(`Could not count applications: ${totalResult.error.message}`);
     if (pendingResult.error) throw new Error(`Could not count pending applications: ${pendingResult.error.message}`);
     if (confirmedResult.error) throw new Error(`Could not count confirmed applications: ${confirmedResult.error.message}`);
     if (weekResult.error) throw new Error(`Could not load weekly application totals: ${weekResult.error.message}`);
     if (currentUser?.id !== loadingUserId) return;
     programs = programResult.data;
-    const reviewNotes = new Map(
-      reviewResult.data.map((review) => [review.application_id, review.reviewer_notes]),
-    );
     applications = applicationResult.data.map((application) => ({
       ...application,
-      reviewer_notes: reviewNotes.get(application.id) ?? null,
       // NEW: build the full name from the new fields if applicant_name is empty
       applicant_name: application.applicant_name
         || [application.first_name, application.middle_name, application.last_name].filter(Boolean).join(" ")
@@ -437,6 +429,7 @@ async function loadDashboard() {
     renderPrograms();
     renderChart();
     renderApplications();
+    await loadConfirmedApplicants(); // NEW
     setDashboardMessage("");
   } catch (error) {
     setDashboardMessage(error instanceof Error ? error.message : "Could not load dashboard data.", true);
@@ -445,6 +438,166 @@ async function loadDashboard() {
     isLoading = false;
   }
 }
+
+// ===== NEW: list of confirmed applicants (names only) + PDF download =====
+function formatApplicantListName(application) {
+  const given = [application.first_name, application.middle_name].filter(Boolean).join(" ");
+  if (application.last_name && given) return `${application.last_name}, ${given}`;
+  return application.applicant_name || [given, application.last_name].filter(Boolean).join(" ") || "Unnamed applicant";
+}
+
+async function loadConfirmedApplicants() {
+  const container = document.querySelector("#confirmed-list");
+  try {
+    const pageSize = 1000;
+    const rows = [];
+    for (let from = 0; ; from += pageSize) {
+      const { data, error } = await supabase
+        .from("applications")
+        .select("id,applicant_name,first_name,middle_name,last_name")
+        .eq("status", "confirmed")
+        .order("id")
+        .range(from, from + pageSize - 1);
+      if (error) throw error;
+      rows.push(...data);
+      if (data.length < pageSize) break;
+    }
+    confirmedApplicants = rows
+      .map(formatApplicantListName)
+      .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: "base" }));
+    renderConfirmedApplicants();
+  } catch (error) {
+    container.replaceChildren(makeElement("p", "empty-message", `Could not load confirmed applicants: ${error.message}`));
+  }
+}
+
+function renderConfirmedApplicants() {
+  const container = document.querySelector("#confirmed-list");
+  const total = confirmedApplicants.length;
+
+  container.replaceChildren();
+  setText("#confirmed-count", `${total} confirmed`);
+  document.querySelector("#save-confirmed").disabled = total === 0;
+
+  if (total === 0) {
+    container.append(makeElement("p", "empty-message", "No confirmed applicants yet."));
+    return;
+  }
+
+  const screenList = makeElement("ol", "confirmed-names");
+  for (const name of confirmedApplicants) {
+    screenList.append(makeElement("li", "", name));
+  }
+  container.append(screenList);
+}
+
+// Save a soft copy as a PDF file
+document.querySelector("#save-confirmed").addEventListener("click", async (event) => {
+  const button = event.currentTarget;
+  const label = button.textContent;
+  button.disabled = true;
+  button.textContent = "Preparing PDF…";
+
+  try {
+    const { jsPDF } = await import("https://cdn.jsdelivr.net/npm/jspdf@2.5.1/+esm");
+    const doc = new jsPDF({ unit: "mm", format: "a4" });
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const margin = 20;
+    const lineHeight = 8;
+    const total = confirmedApplicants.length;
+    const today = new Intl.DateTimeFormat("en", { dateStyle: "long" }).format(new Date());
+
+    doc.setFont("times", "bold");
+    doc.setFontSize(18);
+    doc.text("Confirmed Applicants", pageWidth / 2, margin, { align: "center" });
+    doc.setFont("times", "normal");
+    doc.setFontSize(10);
+    doc.text(`E-Ayuda - ${today} - ${total} total`, pageWidth / 2, margin + 7, { align: "center" });
+
+    doc.setFontSize(12);
+    let y = margin + 20;
+    confirmedApplicants.forEach((name, index) => {
+      const lines = doc.splitTextToSize(name, pageWidth - margin * 2 - 12);
+      if (y + lines.length * lineHeight > pageHeight - margin) {
+        doc.addPage();
+        y = margin;
+      }
+      doc.text(`${index + 1}.`, margin + 8, y, { align: "right" });
+      doc.text(lines, margin + 12, y);
+      y += lines.length * lineHeight;
+    });
+
+    const pages = doc.getNumberOfPages();
+    doc.setFontSize(9);
+    for (let page = 1; page <= pages; page += 1) {
+      doc.setPage(page);
+      doc.text(`Page ${page} of ${pages}`, pageWidth / 2, pageHeight - 10, { align: "center" });
+    }
+
+    doc.save(`confirmed-applicants-${new Date().toISOString().slice(0, 10)}.pdf`);
+  } catch (error) {
+    setDashboardMessage(`Could not create PDF: ${error.message}`, true);
+  } finally {
+    button.textContent = label;
+    button.disabled = confirmedApplicants.length === 0;
+  }
+});
+// ===== END NEW =====
+
+// ===== NEW: delete an active program =====
+async function deleteProgram(program, button) {
+  const received = applicationCountsByProgram.get(program.id) ?? 0;
+  const warning = received > 0 ? `It has ${received} pending/confirmed application(s). ` : "";
+  if (!window.confirm(`${warning}Delete "${program.name}"? This cannot be undone.`)) return;
+
+  button.disabled = true;
+  setDashboardMessage("");
+  const { data, error } = await supabase
+    .from("programs")
+    .delete()
+    .eq("id", program.id)
+    .select("id");
+
+  if (error) {
+    button.disabled = false;
+    // 23503 = the program still has applications linked to it
+    if (error.code === "23503") {
+      if (window.confirm(`"${program.name}" can't be deleted because applications are linked to it.\n\nClose it instead? It will be hidden from applicants and the applications are kept.`)) {
+        await closeProgram(program, button);
+      }
+      return;
+    }
+    setDashboardMessage(`Could not delete program: ${error.message}`, true);
+    return;
+  }
+  if (!data || data.length === 0) {
+    button.disabled = false;
+    setDashboardMessage("Nothing was deleted. Your account may be missing a delete policy on the programs table.", true);
+    return;
+  }
+
+  await loadDashboard();
+  setDashboardMessage("Program deleted.");
+}
+
+async function closeProgram(program, button) {
+  button.disabled = true;
+  const { data, error } = await supabase
+    .from("programs")
+    .update({ is_active: false })
+    .eq("id", program.id)
+    .select("id");
+
+  if (error || !data || data.length === 0) {
+    button.disabled = false;
+    setDashboardMessage(error ? `Could not close program: ${error.message}` : "Could not close the program. Your account may be missing an update policy on the programs table.", true);
+    return;
+  }
+  await loadDashboard();
+  setDashboardMessage("Program closed. Its applications were kept.");
+}
+// ===== END NEW =====
 
 async function verifyAdmin(user) {
   if (!user) {

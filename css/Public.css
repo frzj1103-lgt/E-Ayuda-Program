@@ -79,7 +79,7 @@ header {
 .brand-name {
   color: white;
   font-size: 1.6rem;
-  font-weight: 700;
+  font-weight: 400 !important;
   line-height: 1.1;
 }
 
@@ -203,7 +203,7 @@ header {
   font-size: clamp(4.6rem, 7.2vw, 7.8rem);
   line-height: 0.84;
   letter-spacing: -0.045em;
-  font-weight: 900;
+  font-weight: 400;
   text-transform: uppercase;
   text-wrap: balance;
 }
@@ -343,6 +343,7 @@ button span {
   letter-spacing: -0.02em;
   text-transform: uppercase;
   color: var(--ink);
+  font-weight: 500;
 }
 
 .helper-text {
@@ -1330,7 +1331,7 @@ header {
   font-size: clamp(4rem, 5.9vw, 8rem);
   line-height: 0.9;
   letter-spacing: -0.06em;
-  font-weight: 800;
+  font-weight: 550;
 }
 
 .subtitle {
@@ -2741,7 +2742,7 @@ body.account-page {
   min-height: 48px;
   border: 0;
   border-radius: 3px;
-  background: #ef5a3c;
+  background: #262b5b;
   box-shadow: none;
   color: #fff;
   font-size: 0.78rem;

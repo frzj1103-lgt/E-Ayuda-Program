@@ -40,6 +40,9 @@
           <a class="nav-link" href="#applications" data-filter-status="confirmed">
             <span class="nav-icon" aria-hidden="true">✓</span>Confirmed
           </a>
+          <a class="nav-link" href="#confirmed">
+            <span class="nav-icon" aria-hidden="true">☰</span>Confirmed list
+          </a>
         </nav>
 
         <div class="sidebar-note">
@@ -158,6 +161,21 @@
 
             <div class="application-groups" id="application-groups" aria-live="polite"></div>
           </section>
+          <!-- NEW: list of confirmed applicants (names only) -->
+          <section class="panel confirmed-panel" id="confirmed">
+            <div class="applications-heading">
+              <div>
+                <h3>Confirmed applicants</h3>
+                <p>Names of confirmed applicants only.</p>
+              </div>
+              <div class="confirmed-actions">
+                <span class="applicant-count" id="confirmed-count">0 confirmed</span>
+                <button class="primary-button" id="save-confirmed" type="button" disabled>Save</button>
+              </div>
+            </div>
+            <div id="confirmed-list" aria-live="polite"></div>
+          </section>
+
           <p class="demo-notice" id="dashboard-message" role="status" aria-live="polite"></p>
         </div>
       </main>
