@@ -3453,3 +3453,19 @@ body.account-page .my-application-card {
 .apply-form [hidden] {
   display: none !important;
 }
+
+.tutorial-video {
+  width: 100%;
+  max-width: 720px;
+  margin: 32px auto 0;
+}
+
+.tutorial-video video {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: contain;
+  background: #000;
+  border: 1px solid #bed1df;
+}
